@@ -7,7 +7,7 @@ const detail = ref(null)
 const est = ref(null)
 const load = async () => {
   detail.value = await getJSON(`/api/rooms/${route.params.id}`)
-  est.value = await postJSON('/api/estimate', { room_id: +route.params.id, persist: false })
+  est.value = await postJSON('/api/estimate/precheck', { room_id: +route.params.id })
 }
 onMounted(load); watch(() => route.params.id, load)
 </script>

@@ -1,10 +1,27 @@
 from fastapi import APIRouter, HTTPException
-from app.schemas.estimate import EstimateRequest
-from app.services.paint_service import PaintService
+
+from app.schemas.estimate import ConfirmRequest, PrecheckRequest
+from app.services.paint_service import PaintService, ReceiptError
+
 router = APIRouter()
-@router.post("/estimate")
-def post_estimate(body: EstimateRequest):
+
+_RECEIPT_STATUS = {"not_found": 404, "reused": 409, "expired": 410, "changed": 409}
+
+
+@router.post("/estimate/precheck")
+def precheck(body: PrecheckRequest):
     with PaintService() as s:
-        r = s.estimate(body.room_id, body.persist, body.coats, body.coverage)
-        if not r: raise HTTPException(404)
+        r = s.precheck(body.room_id, body.coats, body.coverage)
+        if not r:
+            raise HTTPException(404, "房间不存在")
         return r
+
+
+@router.post("/estimate/confirm")
+def confirm(body: ConfirmRequest):
+    with PaintService() as s:
+        try:
+            return s.confirm(body.receipt_token)
+        except ReceiptError as e:
+            raise HTTPException(_RECEIPT_STATUS.get(e.code, 409),
+                                {"code": e.code, "detail": e.detail})

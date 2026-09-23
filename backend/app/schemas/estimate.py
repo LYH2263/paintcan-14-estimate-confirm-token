@@ -1,6 +1,11 @@
 from pydantic import BaseModel
-class EstimateRequest(BaseModel):
+
+
+class PrecheckRequest(BaseModel):
     room_id: int
     coats: int | None = None
     coverage: float | None = None
-    persist: bool = True
+
+
+class ConfirmRequest(BaseModel):
+    receipt_token: str
