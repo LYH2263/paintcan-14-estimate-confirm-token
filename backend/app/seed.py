@@ -9,6 +9,7 @@ def init_db():
     CREATE TABLE IF NOT EXISTS openings(id INTEGER PRIMARY KEY, room_id INTEGER, kind TEXT, w REAL, h REAL);
     CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY, value TEXT);
     CREATE TABLE IF NOT EXISTS calc_runs(id INTEGER PRIMARY KEY, kind TEXT, room_id INTEGER, input_json TEXT, result_json TEXT, created_at TEXT);
+    CREATE TABLE IF NOT EXISTS estimate_receipts(token TEXT PRIMARY KEY, room_id INTEGER, coats INTEGER, coverage REAL, snapshot_json TEXT, result_json TEXT, created_at TEXT, expires_at TEXT, used INTEGER DEFAULT 0);
     """)
     if conn.execute("SELECT COUNT(*) c FROM rooms").fetchone()["c"] == 0:
         conn.execute("INSERT INTO rooms(name,length,width,height) VALUES ('客厅',5.0,4.0,2.8)")
